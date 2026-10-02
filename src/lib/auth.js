@@ -3,7 +3,7 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { Resend } from 'resend';
 
-const client = new MongoClient(process.env.BETTER_AUTH_MONGODB_URI);
+const client = new MongoClient(process.env.BETTER_AUTH_DB_URL);
 const db = client.db("better-auth");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -29,9 +29,7 @@ export const auth = betterAuth({
         },
         sendOnSignUp:true,
         autoSignInAfterVerification:true,
-        expiresIn: 60*5
+        expiresIn: 7 * 24 * 3600
     },
-    database: mongodbAdapter(db, {
-        client
-    }),
+    database: mongodbAdapter(db, {client}),
 });
