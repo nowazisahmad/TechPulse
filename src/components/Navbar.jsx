@@ -1,11 +1,13 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Button } from "@heroui/react";
 import { authClient } from "../lib/auth-client";
 import { useRouter } from "next/navigation";
+import baseUrl from "../services/baseUrl";
 
-export default function Navbar() {
+export default function Navbar ({categories}) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // const [categories, setCategories] = useState([])
     const router = useRouter()
 
     const { data: session } = authClient.useSession()
@@ -19,6 +21,16 @@ export default function Navbar() {
             },
         });
     }
+
+    // useEffect(()=>{
+    //     fetch(`${baseUrl}/api/categories`)
+    //     .then(res=> res.json())
+    //     .then(data=> setCategories(data))
+    //     .catch(err=> console.log(err))
+    // },[])
+
+    console.log(categories);
+
 
 
     return (
@@ -60,14 +72,9 @@ export default function Navbar() {
                     </div>
                 </div>
                 <ul className="hidden items-center gap-4 md:flex">
-                    <li>
-                        <Link href="#">Features</Link>
-                    </li>
-                    <li>
-                        <Link href="#" className="font-medium text-accent" aria-current="page">
-                            Dashboard
-                        </Link>
-                    </li>
+                  {
+                    categories?.map(cat=> <li key={cat?._id}><Link href={`/category/${cat?.slug}`}><span>{cat?.icon}</span>{cat?.name}</Link></li>)
+                  }
                     {
                         session?.user && <li>
                             <Link href="/profile">Profile</Link>

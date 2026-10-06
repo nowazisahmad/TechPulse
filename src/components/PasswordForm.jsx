@@ -1,52 +1,30 @@
-"use client";
+'use client'
 import { Button, Description, FieldError, Form, Input, Label, TextField } from "@heroui/react";
-import { signIn } from '../../../lib/auth-client';
-import Link from 'next/link';
+import { resetPassword } from '../lib/auth-client';
 
-const SignIn = () => {
+const PasswordForm = ({token}) => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const data = {}
+        const data = {};
         // Convert FormData to plain object
         formData.forEach((value, key) => {
             data[key] = value.toString();
         });
 
-        const { data: signInData, error } = await signIn.email({
-            email: data.email, // required, The email address of the user.
-            password: data.password, // required, The password of the user. It should be at least 8 characters long and max 128 by default.
-            callbackURL: "/", // An optional URL to redirect to after the user signs in. (optional)
+        const { data:restPassData, error } = await resetPassword({
+            newPassword: data.password, // required, The new password to set
+            token, // required, The token to reset the password
         });
-        console.log(signInData, error)
+
+        console.log(restPassData);
+
     };
-
-
-    const login = async () => {
-        const data = await signIn.social({
-            provider: "google",
-        });
-    };
-
     return (
-        <div className='flex justify-center'>
+        <div>
             <Form className="flex w-96 flex-col gap-4" onSubmit={onSubmit}>
-                <TextField
-                    isRequired
-                    name="email"
-                    type="email"
-                    validate={(value) => {
-                        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-                            return "Please enter a valid email address";
-                        }
-                        return null;
-                    }}
-                >
-                    <Label>Email</Label>
-                    <Input placeholder="john@example.com" />
-                    <FieldError />
-                </TextField>
+
                 <TextField
                     isRequired
                     minLength={8}
@@ -66,24 +44,21 @@ const SignIn = () => {
                     }}
                 >
                     <Label>Password</Label>
-                    <Input placeholder="Enter your password" />
+                    <Input placeholder="Enter your new password" />
                     <Description>Must be at least 8 characters with 1 uppercase and 1 number</Description>
                     <FieldError />
                 </TextField>
                 <div className="flex gap-2">
                     <Button type="submit">
-
                         Submit
                     </Button>
                     <Button type="reset" variant="secondary">
                         Reset
                     </Button>
                 </div>
-                <Link href={'/forget-password'}>Forget Password?</Link>
-            <Button onClick={login}>Google SignIn</Button>
             </Form>
         </div>
     );
 };
 
-export default SignIn;
+export default PasswordForm;
